@@ -7,4 +7,5 @@
  */
 
 include_once 'functions.inc.php';
+include_once 'class.TvMaze.inc.php';
 //include_once 'db_login.inc.php';
