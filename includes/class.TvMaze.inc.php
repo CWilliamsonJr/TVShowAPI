@@ -57,8 +57,13 @@ class TvMaze{
     private function GeneralInfo($request){
         if(!empty($request)){
             $showgenres = '';
+            $shows['SearchIDs'] = '';
+
             $shows['name'] = $request['name'];
             $shows['language'] = $request['language'];
+            $shows['timezone'] = $request['network']['country']['timezone'];
+            $shows['summary'] = $request['summary'];
+            $shows['showpic'] = $request['image']['original'];
             
             if(!empty($request['schedule']['time'])){ // checks if times is present
                 $shows['Showtime']['time'] = date("g:i a", strtotime($request['schedule']['time']));
@@ -76,10 +81,10 @@ class TvMaze{
                 $shows['genres'] = implode('/',$request['genres']);
                 $showgenres = "<span><strong> Genre: </strong> {$shows['genres']} </span> <br/>";
             }
-            $shows['timezone'] = $request['network']['country']['timezone'];
-            $shows['summary'] = $request['summary'];
-            $shows['showpic'] = $request['image']['original'];
-
+            foreach($request['externals'] as $key => $value){
+                if(empty($value)) $value = 'Not Listed';
+                $shows['SearchIDs'] .= '<strong>'. $key.' ID'.'</strong>'. ':'. $value.'&nbsp;&nbsp;';
+            }
 
             $results = <<< SHOWS
                  <blockquote class="col-sm-12">
@@ -90,6 +95,7 @@ class TvMaze{
                         <span> <strong>Show Name:</strong> {$shows['name']} &nbsp;&nbsp; <strong> Language:</strong> {$shows['language']} </span> <br/>
                         <span><strong> Air Date(s):</strong> {$shows['Showtime']['days']}&nbsp; <strong>Time:</strong> {$shows['Showtime']['time']} &nbsp; <strong>                                         Timezone: </strong> {$shows['timezone']} </span> <br/>
                         $showgenres
+                        {$shows['SearchIDs']} <br/>
                         <span><strong>Summary:</strong><small>{$shows['summary']}</small></span>
                     </div>                
                  </blockquote>

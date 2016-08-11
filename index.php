@@ -7,14 +7,6 @@
  */
 include_once 'includes/includes.inc.php';
 $formAction = "'".htmlspecialchars($_SERVER["PHP_SELF"])."'";
-/*
-$tvMaze = new TvMaze();
-$request = $tvMaze->Search('Sherlock');
-
-
-
-include 'searchresults.inc.php';
-//*/
 ?>
 
 <!doctype html>
@@ -53,31 +45,20 @@ include 'searchresults.inc.php';
                 </div>
                 <button class="btn btn-primary search-btn btn-block" type="submit">Submit</button>
             </form>
+
+            <?php
+            if(empty($_POST['TV_Show'])){
+                echo GetSearchInstructions();
+            }
+            ?>
+
         </div>
         <div class="col-md-6 col-sm-12">
             <?php
-                //dump($_POST);
-                if(!empty($_POST)){
-                    $request;
-                    $tvMaze = new TvMaze();
-
-                    switch($_POST['Search']){
-                        case 'Single Search':
-                            $request = $tvMaze->SingleSearch($_POST['TV_Show']);
-                            break;
-                        case 'IMDB':
-                            $request = $tvMaze->ShowLookupByIMDB_ID($_POST['TV_Show']);
-                            break;
-                        case 'TV Rage':
-                            $request = $tvMaze->ShowLookupByTVRage_ID($_POST['TV_Show']);
-                            break;
-                        case 'The TV DB':
-                            $request = $tvMaze->ShowLookupByTheTVDB_ID($_POST['TV_Show']);
-                            break;
-                        default:
-                            $request = $tvMaze->Search($_POST['TV_Show']);
-                    }
-                    echo $request;
+                if(!empty($_POST && !empty($_POST['TV_Show']))){
+                    $tvshow = $_POST['TV_Show'];
+                    $search = $_POST['Search'];
+                    echo GetTVShowInfo($tvshow,$search);
                 }
             ?>
         </div>
