@@ -1,10 +1,13 @@
-blockquote{
-
+.form-group{
 
 }
 
 .showpic{
-    width: 180px;
-    height: 180px;
+    width: 18rem;
+    height: 18rem;
 
+}
+.search-btn{
+    margin-left: 30px;
+    width: 54rem;
 }

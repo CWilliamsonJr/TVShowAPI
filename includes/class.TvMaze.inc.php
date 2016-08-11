@@ -21,7 +21,7 @@ class TvMaze{
             $count = count($request);
 
             for($i = 0; $i < $count; $i++){
-                $results .= $this->ParseResults($request[$i]['show']);
+                $results .= $this->GeneralInfo($request[$i]['show']);
             }
             return $results;
         }else{
@@ -34,34 +34,45 @@ class TvMaze{
     public function SingleSearch($query) { // does a search for a TV show returning one result
         $search = '/singlesearch/shows?q=' . $query;
         $showList = $this->GetShowInfo($search);
-        return $showList = $this->ParseResults($showList);
+        return $showList = $this->GeneralInfo($showList);
         
 
     }
     public function ShowLookupByIMDB_ID($IMDBid){ // does a show look up by its IMDB ID
         $search = '/lookup/shows?imdb='.$IMDBid;
         $showinfo = $this->GetShowInfo($search);
-        return $showinfo = $this->ParseResults($showinfo);
+        return $showinfo = $this->GeneralInfo($showinfo);
     }
     public function ShowLookupByTVRage_ID($tvrageid){ // does a show lookup by its TV Rage ID
         $search = '/lookup/shows?tvrage='.$tvrageid;
         $showinfo = $this->GetShowInfo($search);
-        return $showinfo = $this->ParseResults($showinfo);
+        return $showinfo = $this->GeneralInfo($showinfo);
     }
     public function ShowLookupByTheTVDB_ID($thetvdbid){ // does a show lookup by its The TV DB ID
         $search = '/lookup/shows?thetvdb='.$thetvdbid;
         $showinfo = $this->GetShowInfo($search);
-        return $showinfo = $this->ParseResults($showinfo);
+        return $showinfo = $this->GeneralInfo($showinfo);
     }
     
-    private function ParseResults($request){
+    private function GeneralInfo($request){
         if(!empty($request)){
             $showgenres = '';
             $shows['name'] = $request['name'];
             $shows['language'] = $request['language'];
-            $shows['Showtime']['time'] = date("g:i a", strtotime($request['schedule']['time']));
-            $shows['Showtime']['days'] = implode(',',$request['schedule']['days']);
-            if(!empty($request['genres'])){
+            
+            if(!empty($request['schedule']['time'])){ // checks if times is present
+                $shows['Showtime']['time'] = date("g:i a", strtotime($request['schedule']['time']));
+            }else{
+                $shows['Showtime']['time'] = 'No Time Listed';
+            }
+
+            if(!empty($request['schedule']['days'])){ // checks if days for showtimes was given
+                $shows['Showtime']['days'] = implode(',',$request['schedule']['days']);
+            }else{
+                $shows['Showtime']['days'] = 'No Days Listed';
+            }
+
+            if(!empty($request['genres'])){ // checks if genres where listed.
                 $shows['genres'] = implode('/',$request['genres']);
                 $showgenres = "<span><strong> Genre: </strong> {$shows['genres']} </span> <br/>";
             }
@@ -71,17 +82,17 @@ class TvMaze{
 
 
             $results = <<< SHOWS
-     <blockquote class="col-sm-12">
-                    <div class="col-md-2">
+                 <blockquote class="col-sm-12">
+                    <div class="col-md-3">
                         <img class="showpic" src={$shows['showpic']}>
                     </div>
                     <div class="col-md-8">
                         <span> <strong>Show Name:</strong> {$shows['name']} &nbsp;&nbsp; <strong> Language:</strong> {$shows['language']} </span> <br/>
-                        <span><strong> Air Date(s):</strong> {$shows['Showtime']['days']}&nbsp; <strong>Time:</strong> {$shows['Showtime']['time']} &nbsp; <strong> Timezone: </strong> {$shows['timezone']} </span> <br/>
+                        <span><strong> Air Date(s):</strong> {$shows['Showtime']['days']}&nbsp; <strong>Time:</strong> {$shows['Showtime']['time']} &nbsp; <strong>                                         Timezone: </strong> {$shows['timezone']} </span> <br/>
                         $showgenres
                         <span><strong>Summary:</strong><small>{$shows['summary']}</small></span>
                     </div>                
-     </blockquote>
+                 </blockquote>
 SHOWS;
             return $results;
         }else{
